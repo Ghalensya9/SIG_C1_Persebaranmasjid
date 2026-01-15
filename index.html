@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoSpatial - Persebaran Masjid Mojolangu</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        /* --- 1. ISLAMIC THEME VARIABLES --- */
+        :root {
+            --bg-body: #fdfbf7;       /* Krem lembut seperti kertas tua/dinding masjid */
+            --bg-card: #ffffff;
+            --primary: #1a4d2e;       /* Hijau Tua (Deep Emerald) */
+            --primary-light: #4f772d; /* Hijau Daun */
+            --gold: #d4af37;          /* Emas Metalik */
+            --gold-light: #f3e5ab;
+            --text-main: #1f2937;     /* Dark Charcoal */
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 10px 30px -5px rgba(26, 77, 46, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            /* Pola Geometris Halus (CSS Pattern) */
+            background-image: radial-gradient(var(--gold-light) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, .logo-font {
+            font-family: 'Amiri', serif; /* Font nuansa Islami */
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* --- 2. UI COMPONENTS --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border-radius: 50px; /* Rounded pill shape */
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-family: 'Lato', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(26, 77, 46, 0.3);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 77, 46, 0.4);
+            background: var(--primary);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge {
+            padding: 6px 16px;
+            background: var(--gold-light);
+            color: #8a6d0b; /* Dark Gold */
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* --- 3. NAVBAR --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--gold); /* Aksen emas di navbar */
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Amiri', serif;
+        }
+
+        /* --- 4. HERO SECTION --- */
+        #hero {
+            padding-top: 160px;
+            padding-bottom: 100px;
+            position: relative;
+        }
+
+        /* Dekorasi Lengkungan (Arch) Islami */
+        .islamic-arch {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(212, 175, 55, 0.05), transparent);
+            border-bottom-left-radius: 50% 100%;
+            border-top-left-radius: 50% 100%;
+            z-index: -1;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 4rem; /* Lebih besar karena font Amiri agak kecil */
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .hero-text h1 span {
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        .hero-text p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        .mockup-frame {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 20px; /* Bentuk kubah sedikit */
+            border: 1px solid var(--gold);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Bingkai ganda emas */
+        .mockup-frame::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1px solid var(--gold-light);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .mockup-frame img {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
+        }
+
+        /* --- 5. PREVIEW SECTION --- */
+        #preview { 
+            padding: 100px 0; 
+            background: white;
+            position: relative;
+        }
+        
+        /* Garis pemisah ornamen */
+        #preview::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, var(--primary) 0, var(--primary) 20px, var(--gold) 20px, var(--gold) 40px);
+        }
+
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h2 { font-size: 3rem; color: var(--primary); margin-bottom: 10px; }
+        .section-header p { color: var(--text-muted); }
+
+        .browser-mockup {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px -15px rgba(0,0,0,0.15);
+            border: 1px solid #eee;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .browser-header {
+            padding: 12px 20px;
+            background: #f3f4f6;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; }
+
+        .browser-content img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* --- 6. AUTHOR & FOOTER --- */
+        #author { padding: 80px 0 40px; }
+
+        .profile-card {
+            background: white;
+            border: 2px solid var(--gold-light);
+            padding: 50px 40px 40px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+        }
+        
+        /* Dekorasi sudut kartu */
+        .profile-card::after {
+            content: "✦";
+            position: absolute;
+            top: 10px; right: 15px;
+            color: var(--gold);
+            font-size: 2rem;
+        }
+        .profile-card::before {
+            content: "✦";
+            position: absolute;
+            top: 10px; left: 15px;
+            color: var(--gold);
+            font-size: 2rem;
+        }
+
+        .profile-img-wrapper {
+            width: 130px;
+            height: 130px;
+            margin: -90px auto 20px;
+            border-radius: 50%;
+            padding: 5px;
+            background: white;
+            border: 3px solid var(--gold);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-card h3 { color: var(--primary); font-size: 2rem; margin-bottom: 5px; }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-text h1 { font-size: 3rem; }
+            .hero-text p { margin: 0 auto 30px; }
+            .islamic-arch { display: none; }
+            .hero-image-card { margin-top: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <i class="ri-moon-fill" style="color: var(--gold);"></i> 
+                <span>WebGIS<span style="color:var(--text-main); font-weight:400;">.Mojolangu</span></span>
+            </div>
+            <a href="#preview" class="btn btn-outline" style="padding: 8px 20px; font-size: 0.8rem;">
+                Lihat Peta
+            </a>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="islamic-arch"></div> <div class="container">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <span class="badge">✦ Update Data 2026</span>
+                    <h1>Persebaran Tempat Ibadah<br> <span>Umat Muslim</span></h1>
+                    <p>Sistem Informasi Geografis yang menyajikan data lokasi masjid dan musholla di Kelurahan Mojolangu. Dilengkapi analisis jangkauan layanan untuk memudahkan jamaah beribadah.</p>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                        <a href="#preview" class="btn btn-primary">
+                            Mulai Jelajah <i class="ri-compass-3-line"></i>
+                        </a>
+                        <a href="#features" class="btn btn-outline" style="border-color: var(--text-muted); color: var(--text-muted);">
+                            Pelajari Fitur
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-image-card">
+                    <div class="mockup-frame">
+                        <img src="maxresdefault.jpg" alt="WebGIS Dashboard Hero">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="preview">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tampilan Sistem</h2>
+                <p>Antarmuka yang bersih, mudah digunakan, dan informatif.</p>
+            </div>
+
+            <div class="browser-mockup">
+                <div class="browser-header">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div style="margin-left: 15px; font-size: 0.85rem; color: #6b7280; font-family: sans-serif;">
+                        webgis-mojolangu.com/peta-masjid
+                    </div>
+                </div>
+                <div class="browser-content">
+                    <img src="Logo.png" alt="Layout Peta WebGIS">
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="Masjid/Masjid.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 16px 40px;">
+                    Buka Peta Interaktif Sekarang
+                </a>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">Akses mudah melalui browser desktop maupun mobile.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="author">
+        <div class="container">
+            <div class="profile-card">
+                <div class="profile-img-wrapper">
+                    <img src="WhatsApp Image 2026-01-15 at 17.05.18.jpeg" alt="Ghalensya Novelan">
+                </div>
+                <h3>Ghalensya Novelan</h3>
+                <p style="color: var(--gold); font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">NIM: 23201046</p>
+                <div style="width: 50px; height: 2px; background: var(--gold-light); margin: 0 auto 20px;"></div>
+                <p style="color: var(--text-muted); margin-bottom: 30px; font-style: italic;">
+                    "Mahasiswa Teknik Informatika – Institut Asia Malang. Berdedikasi dalam mengembangkan WebGIS untuk memetakan infrastruktur religi, mentransformasikan data spasial menjadi informasi visual yang bermanfaat bagi kemaslahatan umat dan masyarakat luas."
+                </p>
+                <a href="mailto:ghalensyan@gmail.com" class="btn btn-outline" style="border-radius: 50px; border-color: var(--gold); color: #8a6d0b;">
+                    <i class="ri-mail-send-line"></i> Hubungi Pengembang
+                </a>
+            </div>
+
+            <footer>
+                &copy; 2026 WebGIS Project Mojolangu. Dibuat dengan <i class="ri-heart-fill" style="color: var(--primary)"></i> di Malang.
+            </footer>
+        </div>
+    </section>
+
+    <script>
+        // Animasi fade-in saat scroll (Sama seperti sebelumnya)
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.mockup-frame, .browser-mockup, .profile-card').forEach(el => {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(30px)";
+            el.style.transition = "all 0.8s ease-out";
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+</html>
